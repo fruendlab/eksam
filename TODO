@@ -2,3 +2,5 @@ config: application key, wait time
 deployment
 load testing
 fix cli
+randomize presentation
+at least some tests
