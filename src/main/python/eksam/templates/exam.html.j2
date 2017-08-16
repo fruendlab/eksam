@@ -1,0 +1,35 @@
+{% extends "base.html.j2" %}
+{% block body %}
+<form id="exam" action="/finish/" method="post">
+Your student id: <input type="text" name="student_id" value="{{ student_id}}">
+
+Select all correct statements, deselect all incorrect ones<br>
+
+<div class="row">
+<div class="col-sm-4">
+{% for statement in statements %}
+<label>
+  <input type="checkbox" name="statement{{ statement.idx }}" value="statement{{statement.idx }}" {% if statement.status %}checked{% endif %}>
+  {{ statement.text }}
+</label>
+{% endfor %}
+</ul>
+</div>
+</div>
+</form>
+
+<div id="time-left">{{ test_time_seconds }}s remaining</div>
+<script>
+setTimeout(function () {
+  document.getElementById("exam").submit();
+}, {{ test_time_seconds }}*1000);
+
+var finish = new Date().getTime();
+finish = finish + 1000*{{ test_time_seconds+1 }};
+setInterval(function () {
+  var now = new Date().getTime();
+  var timeDelta = Math.floor((finish - now)/1000);
+  document.getElementById("time-left").innerHTML = timeDelta + "s remaining";
+}, 1000);
+</script>
+{% endblock %}

@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+
+import yaml
+import requests
+import jwt
+
+
+def generate_token():
+    return jwt.encode({'name': 'admin'},
+                      'sensation_and_perception').decode('utf-8')
+
+
+def register_statements(api, fname):
+    with open(fname, 'r') as f:
+        statements = yaml.load(f.read())
+    payload = {'token': generate_token(),
+               'statements': statements}
+    requests.post(api+'/api/statements/', json=payload)
+
+
+def register_students(api, fname):
+    with open(fname, 'r') as f:
+        students = yaml.load(f.read())
+    payload = {'token': generate_token(),
+               'students': students}
+    requests.post(api+'/api/students/', json=payload)
+
+
+if __name__ == '__main__':
+    host = '127.0.0.1'
+    port = 5000
+    url = 'http://{}:{}'.format(host, port)
+    register_statements(url, 'statements.yaml')
+    register_students(url, 'students.yaml')
