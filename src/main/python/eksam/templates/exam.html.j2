@@ -10,7 +10,7 @@ Select all correct statements, deselect all incorrect ones<br>
 Your student id: <input type="text" name="student_id" value="{{ student_id}}">
 
 <div class="row">
-<div class="col-sm-4">
+<div class="col-sm-4 .questions">
 {% for statement in statements %}
 <label>
   <input type="checkbox" name="statement{{ statement.idx }}" value="statement{{statement.idx }}" {% if statement.status %}checked{% endif %}>
