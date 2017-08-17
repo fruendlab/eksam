@@ -1,9 +1,13 @@
 {% extends "base.html.j2" %}
+
+{% block navbar %}
+<div id="time-left" align="right">{{ test_time_seconds }}s remaining</div>
+{% endblock %}
+
 {% block body %}
 <form id="exam" action="/finish/" method="post">
-Your student id: <input type="text" name="student_id" value="{{ student_id}}">
-
 Select all correct statements, deselect all incorrect ones<br>
+Your student id: <input type="text" name="student_id" value="{{ student_id}}">
 
 <div class="row">
 <div class="col-sm-4">
@@ -18,7 +22,6 @@ Select all correct statements, deselect all incorrect ones<br>
 </div>
 </form>
 
-<div id="time-left">{{ test_time_seconds }}s remaining</div>
 <script>
 setTimeout(function () {
   document.getElementById("exam").submit();
