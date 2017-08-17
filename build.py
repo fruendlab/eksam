@@ -21,3 +21,8 @@ def set_properties(project):
     project.depends_on('pyjwt')
     project.depends_on('requests')
     project.depends_on('docopt')
+
+    project.include_file('eksam', 'templates/base.html.j2')
+    project.include_file('eksam', 'templates/exam.html.j2')
+    project.include_file('eksam', 'templates/finish.html.j2')
+    project.include_file('eksam', 'templates/register.html.j2')

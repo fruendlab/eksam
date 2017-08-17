@@ -2,7 +2,8 @@
 
 from random import shuffle
 
-from flask import Flask, render_template, request, abort
+import jinja2
+from flask import Flask, request, abort
 from pony import orm
 import jwt
 
@@ -10,6 +11,10 @@ TEST_TIME_SECONDS = 10
 
 app = Flask(__name__)
 db = orm.Database()
+jinja_env = jinja2.Environment(
+    loader=jinja2.PackageLoader('eksam', 'templates')
+)
+print(jinja_env.list_templates())
 
 
 class Statement(db.Entity):
@@ -97,7 +102,7 @@ def count_correct(answers, responses):
 
 @app.route('/')
 def main():
-    return render_template('register.html.j2')
+    return jinja_env.get_template('register.html.j2').render()
 
 
 @app.route('/exam/', methods=['POST'])
@@ -106,10 +111,10 @@ def exam():
     statements = get_statements()
     shuffle(statements)
     if verify_student(student_id):
-        return render_template('exam.html.j2',
-                               student_id=student_id,
-                               statements=statements,
-                               test_time_seconds=TEST_TIME_SECONDS)
+        return jinja_env.get_template('exam.html.j2').render(
+            student_id=student_id,
+            statements=statements,
+            test_time_seconds=TEST_TIME_SECONDS)
     else:
         abort(401)
 
@@ -125,10 +130,10 @@ def finish():
     total_correct = count_correct((s['answer'] for s in statements), responses)
     total_statements = len(statements)
 
-    return render_template('finish.html.j2',
-                           student_id=student_id,
-                           total_correct=total_correct,
-                           total_statements=total_statements)
+    return jinja_env.get_template('finish.html.j2').render(
+        student_id=student_id,
+        total_correct=total_correct,
+        total_statements=total_statements)
 
 
 @app.route('/api/statements/', methods=['POST'])
