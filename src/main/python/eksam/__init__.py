@@ -7,8 +7,6 @@ from flask import Flask, request, abort
 from pony import orm
 from itsdangerous import BadSignature
 
-TEST_TIME_SECONDS = 10
-
 app = Flask(__name__)
 db = orm.Database()
 jinja_env = jinja2.Environment(
@@ -108,7 +106,7 @@ def exam():
         return jinja_env.get_template('exam.html.j2').render(
             student_id=student_id,
             statements=statements,
-            test_time_seconds=TEST_TIME_SECONDS)
+            test_time_seconds=app.test_time_seconds)
     else:
         abort(401)
 
