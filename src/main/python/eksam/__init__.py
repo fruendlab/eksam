@@ -14,7 +14,6 @@ db = orm.Database()
 jinja_env = jinja2.Environment(
     loader=jinja2.PackageLoader('eksam', 'templates')
 )
-print(jinja_env.list_templates())
 
 
 class Statement(db.Entity):
