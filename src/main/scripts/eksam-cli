@@ -1,8 +1,62 @@
 #!/usr/bin/env python
+"""
+Usage:
+    eksam-cli [options] register <student-file>
+    eksam-cli [options] statements <statement-file>
+    eksam-cli [options] test
 
+Options:
+    --host=<HOSTNAME>, -H <HOSTNAME>
+        Location of eksam server. [Default: 127.0.0.1]
+    --port=<PORT>, -P <PORT>
+        Port of eksam server. [Default: 5000]
+    --secret=<APP_SECRET>, -s <APP_SECRET>
+        Application secret for signing. [Default: EKSAM_SECRET] environment var
+"""
+
+import os
 import yaml
 import requests
 import jwt
+from docopt import docopt
+from tempfile import TemporaryDirectory
+
+TEST_STATEMENTS = '''
+-
+    text: '1 + 1 = 2'
+    answer: True
+    status: 'checked'
+-
+    text: '4 - 2 = 1'
+    answer: False
+    status: 'checked'
+-
+    text: '3 * 4 = 12'
+    answer: True
+-
+    text: '3 * 4 = 14'
+    answer: False
+-
+    text: '5 + 7 = 11'
+    answer: False
+-
+    text: '9 - 3 + 1 = 8'
+    answer: False
+    status: 'checked'
+-
+    text: '9 * 2 - 5 = 13'
+    answer: True
+    status: 'checked'
+-
+    text: '7 + 5 * 3 - 13 = 9'
+    answer: True
+'''
+
+TEST_STUDENTS = '''
+- 1234
+- 1111
+- 2222
+'''
 
 
 def generate_token():
@@ -21,14 +75,28 @@ def register_statements(api, fname):
 def register_students(api, fname):
     with open(fname, 'r') as f:
         students = yaml.load(f.read())
+    print(students)
     payload = {'token': generate_token(),
                'students': students}
     requests.post(api+'/api/students/', json=payload)
 
 
 if __name__ == '__main__':
-    host = '127.0.0.1'
-    port = 5000
-    url = 'http://{}:{}'.format(host, port)
-    register_statements(url, 'statements.yaml')
-    register_students(url, 'students.yaml')
+    args = docopt(__doc__)
+    print(args)
+    url = 'http://{}:{}'.format(args['--host'], args['--port'])
+
+    if args['test']:
+        with TemporaryDirectory() as tempdir:
+            statements = os.path.join(tempdir, 'statements.yaml')
+            students = os.path.join(tempdir, 'students.yaml')
+            with open(statements, 'w') as f:
+                f.write(TEST_STATEMENTS)
+            with open(students, 'w') as f:
+                f.write(TEST_STUDENTS)
+            register_statements(url, statements)
+            register_students(url, students)
+    elif args['register']:
+        register_students(url, args['<student-file>'])
+    elif args['statements']:
+        register_statements(url, args['<statement-file>'])
