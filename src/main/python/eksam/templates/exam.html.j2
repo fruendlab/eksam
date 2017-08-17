@@ -15,7 +15,7 @@ Your student id: <input type="text" name="student_id" value="{{ student_id}}">
 <label>
   <input type="checkbox" name="statement{{ statement.idx }}" value="statement{{statement.idx }}" {% if statement.status %}checked{% endif %}>
   {{ statement.text }}
-</label>
+</label><br>
 {% endfor %}
 </ul>
 </div>
