@@ -5,7 +5,7 @@ from random import shuffle
 import jinja2
 from flask import Flask, request, abort
 from pony import orm
-import jwt
+from itsdangerous import BadSignature
 
 TEST_TIME_SECONDS = 10
 
@@ -40,11 +40,6 @@ class Answer(db.Entity):
 def add_students(student_ids):
     for student_id in student_ids:
         Student(student_id=str(student_id))
-
-
-def verify_token(token):
-    decoded = jwt.decode(token, 'sensation_and_perception')
-    return decoded['name'] == 'admin'
 
 
 @orm.db_session()
@@ -138,17 +133,19 @@ def finish():
 
 @app.route('/api/statements/', methods=['POST'])
 def api_statements():
-    if verify_token(request.json['token']):
-        add_statements(request.json['statements'])
-        return '', 200
-    else:
+    try:
+        statements = app.signer.loads(request.data)
+    except BadSignature:
         abort(401)
+    add_statements(statements)
+    return '', 200
 
 
 @app.route('/api/students/', methods=['POST'])
 def api_students():
-    if verify_token(request.json['token']):
-        add_students(request.json['students'])
-        return '', 200
-    else:
+    try:
+        students = app.signer.loads(request.data)
+    except BadSignature:
         abort(401)
+    add_students(students)
+    return '', 200
