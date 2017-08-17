@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from random import shuffle
+
 from flask import Flask, render_template, request, abort
 from pony import orm
 import jwt
@@ -96,6 +98,9 @@ def count_correct(answers, responses):
     return count
 
 
+# # # # # Routes
+
+
 @app.route('/')
 def main():
     return render_template('register.html.j2')
@@ -105,6 +110,7 @@ def main():
 def exam():
     student_id = request.form['student_id']
     statements = get_statements()
+    shuffle(statements)
     if verify_student(student_id):
         return render_template('exam.html.j2',
                                student_id=student_id,
