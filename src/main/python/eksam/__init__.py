@@ -31,12 +31,6 @@ class Answer(db.Entity):
     correct = orm.Required(bool)
 
 
-# db.bind(provider='sqlite', filename='student_data.db', create_db=True)
-db.bind(provider='sqlite', filename=':memory:')
-print("Generating Mapping")
-db.generate_mapping(create_tables=True)
-
-
 @orm.db_session()
 def add_students(student_ids):
     for student_id in student_ids:
