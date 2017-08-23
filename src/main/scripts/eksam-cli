@@ -10,6 +10,8 @@ Options:
         Location of eksam server. [Default: 127.0.0.1]
     --port=<PORT>, -P <PORT>
         Port of eksam server. [Default: 5000]
+    --url=<URL>, -u <URL>
+        Url of eksam web app.
     --secret=<APP_SECRET>, -s <APP_SECRET>
         Application secret for signing. [Default: EKSAM_SECRET] environment var
 """
@@ -78,7 +80,10 @@ def register_students(api, fname, signer):
 if __name__ == '__main__':
     args = docopt(__doc__)
     print(args)
-    url = 'http://{}:{}'.format(args['--host'], args['--port'])
+    if args['--url']:
+        url = 'http://' + args['--url']
+    else:
+        url = 'http://{}:{}'.format(args['--host'], args['--port'])
     signer = JSONWebSignatureSerializer(args['--secret'])
 
     if args['test']:
