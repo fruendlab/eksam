@@ -15,24 +15,14 @@ Options:
 """
 
 from docopt import docopt
-from itsdangerous import JSONWebSignatureSerializer
 
 from eksam import db, app
+from eksam.wsgi import configure
 
 if __name__ == '__main__':
     args = docopt(__doc__)
 
-    if args['<db-location>'] == ':memory:':
-        db.bind(provider='sqlite', filename=':memory:')
-    else:
-        db.bind(provider='sqlite',
-                filename=args['<db-location>'],
-                create_db=True)
-
-    db.generate_mapping(create_tables=True)
-
-    app.signer = JSONWebSignatureSerializer(args['--secret'])
-    app.test_time_seconds = int(args['--test-time'])
+    app = configure(app, db, args)
 
     app.run(args['--host'],
             args['--port'],
