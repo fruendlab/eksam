@@ -24,6 +24,7 @@ class Statement(db.Entity):
 class Student(db.Entity):
     student_id = orm.PrimaryKey(str)
     answers = orm.Set("Answer")
+    accomodation = orm.Required(orm.Decimal, default=1.)
 
 
 class Answer(db.Entity):
