@@ -24,7 +24,7 @@ class Statement(db.Entity):
 class Student(db.Entity):
     student_id = orm.PrimaryKey(str)
     answers = orm.Set("Answer")
-    accomodation = orm.Required(orm.Decimal, default=1.)
+    accomodation = orm.Required(float, default=1.)
 
 
 class Answer(db.Entity):
@@ -37,8 +37,9 @@ class Answer(db.Entity):
 @orm.db_session()
 def add_students(student_data):
     for student in student_data:
-        Student(student_id=str(student_data['id']),
-                accomodation=float(student_data['accomodation']))
+        print('Adding student', student)
+        Student(student_id=str(student['id']),
+                accomodation=float(student['accomodation']))
 
 
 @orm.db_session()
