@@ -50,6 +50,11 @@ def verify_student(student_id):
 
 
 @orm.db_session()
+def get_accomodation(student_id):
+    return Student[student_id].accomodation
+
+
+@orm.db_session()
 def get_statements():
     result = orm.select(
         statement for statement in Statement
@@ -104,10 +109,11 @@ def exam():
     statements = get_statements()
     shuffle(statements)
     if verify_student(student_id):
+        accomodation = get_accomodation(student_id)
         return jinja_env.get_template('exam.html.j2').render(
             student_id=student_id,
             statements=statements,
-            test_time_seconds=app.test_time_seconds)
+            test_time_seconds=app.test_time_seconds*accomodation)
     else:
         abort(401)
 
