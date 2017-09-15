@@ -36,8 +36,8 @@ class Answer(db.Entity):
 
 @orm.db_session()
 def add_students(student_ids):
-    for student_id in student_ids:
-        Student(student_id=str(student_id))
+    for student_id, accomodation in student_ids.items():
+        Student(student_id=str(student_id), accomodation=float(accomodation))
 
 
 @orm.db_session()
