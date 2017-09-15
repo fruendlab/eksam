@@ -55,9 +55,9 @@ TEST_STATEMENTS = '''
 '''
 
 TEST_STUDENTS = '''
-- 1234
-- 1111
-- 2222
+- {id: 1234, accomodation: 1}
+- {id: 1111, accomodation: 1}
+- {id: 2222, accomodation: 2}
 '''
 
 
