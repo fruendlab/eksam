@@ -18,14 +18,15 @@ class Statement(db.Entity):
     text = orm.Required(str)
     correct_answer = orm.Required(bool)
     checked = orm.Required(bool)
-    answers = orm.Set("Answer")
-    chapter = orm.Required(int)
+    answers = orm.Set('Answer')
+    chapter = orm.Required('Chapter')
 
 
 class Student(db.Entity):
     student_id = orm.PrimaryKey(str)
-    answers = orm.Set("Answer")
-    finished = orm.Set(int)
+    answers = orm.Set('Answer')
+    finished = orm.Set('Chapter')
+    accomodation = orm.Required(float, default=1)
 
 
 class Answer(db.Entity):
@@ -35,10 +36,17 @@ class Answer(db.Entity):
     correct = orm.Required(bool)
 
 
+class Chapter(db.Entity):
+    number = orm.PrimaryKey(int)
+    statements = orm.Set(Statement)
+    students_submitted = orm.Set(Student)
+
+
 @orm.db_session()
-def add_students(student_ids):
-    for student_id in student_ids:
-        Student(student_id=str(student_id))
+def add_students(students):
+    for student in students:
+        Student(student_id=str(student['id']),
+                accomodation=float(student['accomodation']))
 
 
 @orm.db_session()
@@ -53,7 +61,9 @@ def verify_student(student_id):
 @orm.db_session()
 def get_statements(chapter):
     result = orm.select(
-        statement for statement in Statement if statement.chapter == chapter
+        statement
+        for statement in Statement
+        if statement.chapter.number == int(chapter)
     ).order_by(Statement.id)
     out = []
     for statement in result:
@@ -79,10 +89,20 @@ def write_answers(student_id, statements, answers):
 @orm.db_session()
 def add_statements(statements):
     for statement in statements:
+        chapter = ensure_chapter(statement['chapter'])
         Statement(text=statement['text'],
                   correct_answer=statement['answer'],
-                  chapter=statement['chapter'],
+                  chapter=chapter,
                   checked='status' in statement)
+
+
+def ensure_chapter(chapter):
+    if Chapter.exists(number=int(chapter)):
+        return Chapter[int(chapter)]
+    else:
+        chapter = Chapter(number=int(chapter))
+        db.commit()
+        return chapter
 
 
 def count_correct(answers, responses):
@@ -95,9 +115,9 @@ def count_correct(answers, responses):
 # # # # # Routes
 
 
-@app.route('/')
-def main():
-    return jinja_env.get_template('register.html.j2').render()
+@app.route('/<chapter>/')
+def main(chapter):
+    return jinja_env.get_template('register.html.j2').render(chapter=chapter)
 
 
 @app.route('/exam/<chapter>/', methods=['POST'])

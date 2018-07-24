@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-<form id="exam" action="/finish/" method="post">
+<form id="exam" action="/finish/{{ chapter }}/" method="post">
 Select all correct statements, deselect all incorrect ones<br>
 Your student id: <input type="text" name="student_id" value="{{ student_id}}">
 
