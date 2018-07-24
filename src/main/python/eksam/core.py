@@ -19,11 +19,13 @@ class Statement(db.Entity):
     correct_answer = orm.Required(bool)
     checked = orm.Required(bool)
     answers = orm.Set("Answer")
+    chapter = orm.Required(int)
 
 
 class Student(db.Entity):
     student_id = orm.PrimaryKey(str)
     answers = orm.Set("Answer")
+    finished = orm.Set(int)
 
 
 class Answer(db.Entity):
@@ -49,9 +51,9 @@ def verify_student(student_id):
 
 
 @orm.db_session()
-def get_statements():
+def get_statements(chapter):
     result = orm.select(
-        statement for statement in Statement
+        statement for statement in Statement if statement.chapter == chapter
     ).order_by(Statement.id)
     out = []
     for statement in result:
@@ -79,6 +81,7 @@ def add_statements(statements):
     for statement in statements:
         Statement(text=statement['text'],
                   correct_answer=statement['answer'],
+                  chapter=statement['chapter'],
                   checked='status' in statement)
 
 
@@ -97,24 +100,25 @@ def main():
     return jinja_env.get_template('register.html.j2').render()
 
 
-@app.route('/exam/', methods=['POST'])
-def exam():
+@app.route('/exam/<chapter>/', methods=['POST'])
+def exam(chapter):
     student_id = request.form['student_id']
-    statements = get_statements()
+    statements = get_statements(chapter)
     shuffle(statements)
     if verify_student(student_id):
         return jinja_env.get_template('exam.html.j2').render(
             student_id=student_id,
             statements=statements,
+            chapter=chapter,
             test_time_seconds=app.test_time_seconds)
     else:
         abort(401)
 
 
-@app.route('/finish/', methods=['POST'])
-def finish():
+@app.route('/finish/<chapter>/', methods=['POST'])
+def finish(chapter):
     student_id = request.form['student_id']
-    statements = get_statements()
+    statements = get_statements(chapter)
     print(request.form)
     responses = ['statement{}'.format(s['idx']) in request.form
                  for s in statements]
