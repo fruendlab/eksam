@@ -26,7 +26,7 @@ class Student(db.Entity):
     student_id = orm.PrimaryKey(str)
     answers = orm.Set('Answer')
     finished = orm.Set('Chapter')
-    accomodation = orm.Required(float, default=1)
+    accomodation = orm.Required(float, default=1.)
 
 
 class Answer(db.Entity):
@@ -43,8 +43,9 @@ class Chapter(db.Entity):
 
 
 @orm.db_session()
-def add_students(students):
-    for student in students:
+def add_students(student_data):
+    for student in student_data:
+        print('Adding student', student)
         Student(student_id=str(student['id']),
                 accomodation=float(student['accomodation']))
 
@@ -56,6 +57,11 @@ def verify_student(student_id):
     except orm.core.ObjectNotFound:
         return False
     return len(student.answers) == 0
+
+
+@orm.db_session()
+def get_accomodation(student_id):
+    return Student[student_id].accomodation
 
 
 @orm.db_session()
@@ -137,11 +143,12 @@ def exam(chapter):
     statements = get_statements(chapter)
     shuffle(statements)
     if verify_student(student_id):
+        accomodation = get_accomodation(student_id)
         return jinja_env.get_template('exam.html.j2').render(
             student_id=student_id,
             statements=statements,
             chapter=chapter,
-            test_time_seconds=app.test_time_seconds)
+            test_time_seconds=app.test_time_seconds*accomodation)
     else:
         abort(401)
 
