@@ -28,36 +28,44 @@ TEST_STATEMENTS = '''
     text: '1 + 1 = 2'
     answer: True
     status: 'checked'
+    chapter: 1
 -
     text: '4 - 2 = 1'
     answer: False
     status: 'checked'
+    chapter: 1
 -
     text: '3 * 4 = 12'
     answer: True
+    chapter: 1
 -
     text: '3 * 4 = 14'
     answer: False
+    chapter: 1
 -
     text: '5 + 7 = 11'
     answer: False
+    chapter: 2
 -
     text: '9 - 3 + 1 = 8'
     answer: False
     status: 'checked'
+    chapter: 2
 -
     text: '9 * 2 - 5 = 13'
     answer: True
     status: 'checked'
+    chapter: 2
 -
     text: '7 + 5 * 3 - 13 = 9'
     answer: True
+    chapter: 2
 '''
 
 TEST_STUDENTS = '''
-- 1234
-- 1111
-- 2222
+- {id: '1234', accomodation: 1}
+- {id: '1111', accomodation: 1}
+- {id: '2222', accomodation: 1.5}
 '''
 
 
