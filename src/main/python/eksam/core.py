@@ -77,13 +77,14 @@ def get_statements(chapter):
 
 
 @orm.db_session()
-def write_answers(student_id, statements, answers):
+def write_answers(student_id, statements, answers, chapter):
     student = Student[student_id]
     for statement, answer in zip(statements, answers):
         Answer(student=student,
                statement=Statement[statement['idx']],
                response=answer,
                correct=answer == statement['answer'])
+    student.finished.add(Chapter[int(chapter)])
 
 
 @orm.db_session()
@@ -94,6 +95,16 @@ def add_statements(statements):
                   correct_answer=statement['answer'],
                   chapter=chapter,
                   checked='status' in statement)
+
+
+@orm.db_session()
+def duplicate_submission(student_id, chapter_id):
+    student = Student[student_id]
+    for chapter in student.finished:
+        if chapter.number == int(chapter_id):
+            return True
+    else:
+        return False
 
 
 def ensure_chapter(chapter):
@@ -138,11 +149,13 @@ def exam(chapter):
 @app.route('/finish/<chapter>/', methods=['POST'])
 def finish(chapter):
     student_id = request.form['student_id']
+    if duplicate_submission(student_id, chapter):
+        abort(401)
     statements = get_statements(chapter)
     print(request.form)
     responses = ['statement{}'.format(s['idx']) in request.form
                  for s in statements]
-    write_answers(student_id, statements, responses)
+    write_answers(student_id, statements, responses, chapter)
     total_correct = count_correct((s['answer'] for s in statements), responses)
     total_statements = len(statements)
 
