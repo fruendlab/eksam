@@ -1,7 +1,7 @@
 {% extends "base.html.j2" %}
 {% block body %}
 <form action="/exam/{{ chapter }}/" method="post">
-    Student id: <input type="text" name="student_id" value="">
+    Student id: <input id="student_id" type="text" name="student_id" value="">
     <input type="submit" value="Submit">
 </form>
 {% endblock %}
