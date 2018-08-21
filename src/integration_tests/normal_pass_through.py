@@ -37,5 +37,5 @@ def test_normal_submission():
     browser.stop_client()
 
 
-with server_running():
+with server_running(TIME_TO_RESPOND):
     test_normal_submission()

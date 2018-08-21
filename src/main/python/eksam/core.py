@@ -3,7 +3,7 @@
 from random import shuffle
 
 import jinja2
-from flask import Flask, request, abort
+from flask import Flask, request, abort, jsonify
 from pony import orm
 from itsdangerous import BadSignature
 
@@ -45,9 +45,13 @@ class Chapter(db.Entity):
 @orm.db_session()
 def add_students(student_data):
     for student in student_data:
-        print('Adding student', student)
-        Student(student_id=str(student['id']),
-                accomodation=float(student['accomodation']))
+        if Student.exists(student_id=str(student['id'])):
+            s = Student.get(student_id=str(student['id']))
+            s.accomodation = float(student['accomodation'])
+        else:
+            print('Adding student', student)
+            Student(student_id=str(student['id']),
+                    accomodation=float(student['accomodation']))
 
 
 @orm.db_session()
@@ -57,6 +61,17 @@ def verify_student(student_id):
     except orm.core.ObjectNotFound:
         return False
     return len(student.answers) == 0
+
+
+@orm.db_session()
+def get_student_list():
+    students = []
+    all_students = (s for s in Student)
+    for student in orm.select(all_students):
+        students.append({'id': str(student.student_id),
+                         'accomodation': student.accomodation,
+                         'finished': [ch.number for ch in student.finished]})
+    return students
 
 
 @orm.db_session()
@@ -159,7 +174,6 @@ def finish(chapter):
     if duplicate_submission(student_id, chapter):
         abort(401)
     statements = get_statements(chapter)
-    print(request.form)
     responses = ['statement{}'.format(s['idx']) in request.form
                  for s in statements]
     write_answers(student_id, statements, responses, chapter)
@@ -190,3 +204,15 @@ def api_students():
         abort(401)
     add_students(students)
     return '', 200
+
+
+@app.route('/api/students/', methods=['GET'])
+def api_get_students():
+    try:
+        token = app.signer.loads(request.args.get('token'))
+        if not token == 'token':
+            raise BadSignature
+    except BadSignature:
+        abort(401)
+    student_list = get_student_list()
+    return jsonify(student_list), 200
