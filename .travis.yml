@@ -14,5 +14,6 @@ install:
   - pyb install_dependencies
   - pyb install
 script:
+  - echo $PATH
   - python src/integration_tests/normal_pass_through.py
-  - python src/integration_tests/incremental_adding_of_students.py
+  - killall eksam-server && python src/integration_tests/incremental_adding_of_students.py
