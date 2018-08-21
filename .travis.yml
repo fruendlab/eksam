@@ -15,5 +15,6 @@ install:
   - pyb install
 script:
   - echo $PATH
+  - which chromedriver
   - python src/integration_tests/normal_pass_through.py
   - killall eksam-server && python src/integration_tests/incremental_adding_of_students.py
