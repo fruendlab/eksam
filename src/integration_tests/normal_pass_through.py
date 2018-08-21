@@ -1,30 +1,11 @@
-from contextlib import contextmanager
-import subprocess
-import os
-import signal
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
+from eksam.testing import server_running
+
 TIME_TO_RESPOND = 2
-
-
-# start server
-@contextmanager
-def server_running():
-    subprocess.run('touch /tmp/test.db && rm /tmp/test.db', shell=True)
-    with subprocess.Popen('eksam-server -s test /tmp/test.db -t {}'
-                          .format(TIME_TO_RESPOND),
-                          shell=True,
-                          ) as server:
-        time.sleep(2)  # Leave some time for the server to come up
-        subprocess.run('eksam-cli -s test register example-students.yaml',
-                       shell=True)
-        subprocess.run('eksam-cli -s test statements example-statements.yaml',
-                       shell=True)
-        yield
-        os.kill(server.pid, signal.SIGKILL)
 
 
 def test_normal_submission():
