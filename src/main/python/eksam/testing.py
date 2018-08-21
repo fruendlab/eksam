@@ -9,15 +9,15 @@ from contextlib import contextmanager
 @contextmanager
 def server_running(time_to_respond):
     subprocess.run('touch /tmp/test.db && rm /tmp/test.db', shell=True)
-    with subprocess.Popen('eksam-server -s test /tmp/test.db -t {}'
-                          .format(time_to_respond),
-                          shell=True,
-                          ) as server:
-        time.sleep(2)  # Leave some time for the server to come up
-        register_students()
-        upload_statements()
-        yield
-        os.kill(server.pid, signal.SIGKILL)
+    server = subprocess.Popen('eksam-server -s test /tmp/test.db -t {}'
+                              .format(time_to_respond),
+                              shell=True)
+    time.sleep(2)  # Leave some time for the server to come up
+    register_students()
+    upload_statements()
+    yield
+    server.terminate()
+    os.kill(server.pid, signal.SIGKILL)
 
 
 def register_students(fname='example-students.yaml'):
