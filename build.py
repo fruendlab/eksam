@@ -22,6 +22,7 @@ def set_properties(project):
     project.depends_on('requests')
     project.depends_on('docopt')
     project.depends_on('selenium')
+    project.depends_on('jinja2')
 
     project.include_file('eksam', 'templates/base.html.j2')
     project.include_file('eksam', 'templates/exam.html.j2')
