@@ -1,0 +1,59 @@
+-
+  text: 'Time pressure is good to relax.'
+  answer: False
+  status: 'checked'
+  chapter: 1
+-
+  text: 'Online exams save paper.'
+  answer: True
+  chapter: 1
+-
+  text: '"Sensation and Perception" is my favourite subject.'
+  answer: True
+  status: 'checked'
+  chapter: 1
+-
+  text: 'Average temperatures in Canada are larger than in Florida.'
+  answer: False
+  status: 'checked'
+  chapter: 1
+-
+  text: 'Average temperatures in Florida are larger than in Canada.'
+  answer: True
+  chapter: 1
+-
+  text: 'In 2017, books are no longer worth reading.'
+  answer: False
+  chapter: 1
+-
+  text: 'Average temperatures in summer are lower than in winter.'
+  answer: False
+  status: 'checked'
+  chapter: 1
+-
+  text: 'Area is proportional to the square of circumference.'
+  answer: True
+  chapter: 1
+-
+  text: 'A square has five corners.'
+  answer: False
+  chapter: 2
+-
+  text: 'A triangle has three corners.'
+  answer: True
+  status: 'checked'
+  chapter: 2
+-
+  text: 'Temperatures in Canada are never below freezing.'
+  answer: False
+  status: 'checked'
+  chapter: 2
+-
+  text: 'York University has no students and only does research.'
+  answer: False
+  status: 'checked'
+  chapter: 2
+-
+  text: 'Talk is cheap'
+  answer: True
+  chapter: 2
