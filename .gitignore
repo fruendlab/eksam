@@ -1,0 +1,6 @@
+.*.swp
+.venv3/
+.coverage
+target/
+__pycache__/
+src/main/scripts/templates/
