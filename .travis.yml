@@ -13,6 +13,7 @@ install:
   - pip install pybuilder
   - pyb install_dependencies
   - pyb install
+  - ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver
 script:
   - echo $PATH
   - which chromedriver
