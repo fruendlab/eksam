@@ -7,7 +7,7 @@ python:
   - "3.6"
 install:
   - wget -N http://chromedriver.storage.googleapis.com/2.30/chromedriver_linux64.zip -P ~/
-  - unzip ~/chromedriver_linux64.zip && ls && rm ~/chromedriver_linux64.zip && mv ~/chromedriver ~/bin/
+  - unzip ~/chromedriver_linux64.zip && ls && rm ~/chromedriver_linux64.zip && ls && mv chromedriver ~/bin/
   - pip install -U pip
   - pip install pybuilder
   - pyb install_dependencies
