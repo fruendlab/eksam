@@ -6,6 +6,7 @@ import time
 
 from contextlib import contextmanager
 
+
 @contextmanager
 def server_running(time_to_respond):
     subprocess.run('touch /tmp/test.db && rm /tmp/test.db', shell=True)
