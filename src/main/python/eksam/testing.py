@@ -46,3 +46,22 @@ def list_students():
 
     s = yaml.load(str(students))
     return s
+
+
+def list_statements(chapter):
+    statements = subprocess.check_output(
+        'eksam-cli -s test list-statements {}'.format(chapter),
+        shell=True)
+    statements = statements.decode('utf-8').splitlines()
+    yaml_started = False
+    lines = []
+    for line in statements:
+        if len(line) == 0:
+            continue
+        if line[0] == '-':
+            yaml_started = True
+        if yaml_started:
+            lines.append(line)
+    statements = '\n'.join(lines)
+    s = yaml.load(str(statements))
+    return s

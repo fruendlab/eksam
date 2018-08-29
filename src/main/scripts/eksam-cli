@@ -4,6 +4,7 @@ Usage:
     eksam-cli [options] register <student-file>
     eksam-cli [options] statements <statement-file>
     eksam-cli [options] list-students
+    eksam-cli [options] list-statements <chapter>
     eksam-cli [options] test
 
 Options:
@@ -22,7 +23,6 @@ import yaml
 from itsdangerous import JSONWebSignatureSerializer
 import requests
 from docopt import docopt
-from io import StringIO
 from tempfile import TemporaryDirectory
 
 TEST_STATEMENTS = '''
@@ -94,6 +94,15 @@ def list_students(api, signer):
     if r.status_code == 200:
         print(yaml.dump(r.json(), width=50))
 
+
+def list_statements(api, signer, chapter):
+    print('Get statement list')
+    r = requests.get(api+'/api/statements/{}/'.format(chapter),
+                     params={'token': signer.dumps('token')})
+    if r.status_code == 200:
+        print(yaml.dump(r.json(), width=50))
+
+
 if __name__ == '__main__':
     args = docopt(__doc__)
     print(args)
@@ -119,3 +128,5 @@ if __name__ == '__main__':
         register_statements(url, args['<statement-file>'], signer)
     elif args['list-students']:
         list_students(url, signer)
+    elif args['list-statements']:
+        list_statements(url, signer, args['<chapter>'])

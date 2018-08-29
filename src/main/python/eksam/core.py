@@ -109,13 +109,19 @@ def write_answers(student_id, statements, answers, chapter):
 
 
 @orm.db_session()
-def add_statements(statements):
+def update_statements(statements):
     for statement in statements:
         chapter = ensure_chapter(statement['chapter'])
-        Statement(text=statement['text'],
-                  correct_answer=statement['answer'],
-                  chapter=chapter,
-                  checked='status' in statement)
+        s = Statement.get(text=statement['text'])
+        print('Found statement', s)
+        if s:
+            s.correct_answer = statement['answer']
+            s.chapter = chapter
+        else:
+            Statement(text=statement['text'],
+                      correct_answer=statement['answer'],
+                      chapter=chapter,
+                      checked='status' in statement)
 
 
 @orm.db_session()
@@ -192,8 +198,20 @@ def api_statements():
         statements = app.signer.loads(request.data)
     except BadSignature:
         abort(401)
-    add_statements(statements)
+    update_statements(statements)
     return '', 200
+
+
+@app.route('/api/statements/<chapter>/', methods=['GET'])
+def api_get_statements(chapter):
+    try:
+        token = app.signer.loads(request.args.get('token'))
+        if not token == 'token':
+            raise BadSignature
+    except BadSignature:
+        abort(401)
+    statement_list = get_statements(int(chapter))
+    return jsonify(statement_list), 200
 
 
 @app.route('/api/students/', methods=['POST'])
@@ -202,6 +220,7 @@ def api_students():
         students = app.signer.loads(request.data)
     except BadSignature:
         abort(401)
+    print('Students:', students)
     add_students(students)
     return '', 200
 

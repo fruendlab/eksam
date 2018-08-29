@@ -1,6 +1,5 @@
 import time
 import yaml
-import subprocess
 
 from eksam import testing
 
