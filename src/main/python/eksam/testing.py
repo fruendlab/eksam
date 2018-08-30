@@ -3,6 +3,7 @@ import yaml
 import os
 import signal
 import time
+import requests
 
 from contextlib import contextmanager
 
@@ -65,3 +66,29 @@ def list_statements(chapter):
     statements = '\n'.join(lines)
     s = yaml.load(str(statements))
     return s
+
+
+def submit_fake_answers():
+    chapter = 1
+    students = [str(i)*4 for i in range(10)]
+    statements = list_statements(chapter)
+    url = 'http://127.0.0.1:5000'
+
+    for n, student in enumerate(students):
+        payload = {'student_id': student}
+        for i in range(n):
+            if i < len(statements):
+                payload['statement{}'.format(statements[i]['idx'])] = True
+        if n == 9:
+            break
+        r = requests.post(url + '/finish/{}/'.format(chapter),
+                          data=payload)
+        print(r.status_code)
+
+
+def get_grades():
+    chapter = 1
+    grades = subprocess.check_output(
+        'eksam-cli -s test fetch {}'.format(chapter),
+        shell=True)
+    print(grades)

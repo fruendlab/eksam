@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from random import shuffle
+from itertools import product
 
 import jinja2
 from flask import Flask, request, abort, jsonify
@@ -150,6 +151,36 @@ def count_correct(answers, responses):
     return count
 
 
+@orm.db_session()
+def get_grades(chapters):
+    students = orm.select(s for s in Student)
+    chapters = (Chapter[int(c)] for c in chapters)
+    grades = []
+    for student, chapter in product(students, chapters):
+        if chapter not in student.finished:
+            grades.append({'student_id': student.student_id,
+                           'correct_answers': float('nan'),
+                           'total_answers': float('nan'),
+                           'percentage': float('nan'),
+                           'chapter': chapter.number,
+                           'scaled_percentage': float('nan')})
+            continue
+        ncorrect = 0
+        ntotal = 0
+        for statement in chapter.statements:
+            answer = Answer.get(student=student,
+                                statement=statement)
+            ncorrect += answer.correct
+            ntotal += 1
+        grades.append({'student_id': student.student_id,
+                       'correct_answers': ncorrect,
+                       'total_answers': ntotal,
+                       'percentage': 100*ncorrect/ntotal,
+                       'chapter': chapter.number,
+                       'scaled_percentage': 125*ncorrect/ntotal})
+    return grades
+
+
 # # # # # Routes
 
 
@@ -235,3 +266,13 @@ def api_get_students():
         abort(401)
     student_list = get_student_list()
     return jsonify(student_list), 200
+
+
+@app.route('/api/grades/', methods=['GET'])
+def api_get_grades():
+    try:
+        chapters = app.signer.loads(request.args.get('chapters'))
+    except BadSignature:
+        abort(401)
+    grades = get_grades(chapters)
+    return jsonify(grades), 200

@@ -1,5 +1,4 @@
 import time
-import yaml
 
 from eksam import testing
 

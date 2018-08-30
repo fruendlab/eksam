@@ -5,6 +5,7 @@ Usage:
     eksam-cli [options] statements <statement-file>
     eksam-cli [options] list-students
     eksam-cli [options] list-statements <chapter>
+    eksam-cli [options] fetch <chapters> ...
     eksam-cli [options] test
 
 Options:
@@ -16,6 +17,8 @@ Options:
         Url of eksam web app.
     --secret=<APP_SECRET>, -s <APP_SECRET>
         Application secret for signing. [Default: EKSAM_SECRET] environment var
+    --out=<OUTFILE>, -o <OUTFILE>
+        Output file (only for fetch) [Default: grades.json]
 """
 
 import os
@@ -103,6 +106,15 @@ def list_statements(api, signer, chapter):
         print(yaml.dump(r.json(), width=50))
 
 
+def fetch(api, signer, chapters, outfile):
+    r = requests.get(api+'/api/grades/',
+                     params={'chapters': signer.dumps(chapters)})
+    if r.status_code == 200:
+        with open(outfile, 'w') as f:
+            print('Writing to file {}'.format(outfile))
+            f.write(r.text)
+
+
 if __name__ == '__main__':
     args = docopt(__doc__)
     print(args)
@@ -130,3 +142,5 @@ if __name__ == '__main__':
         list_students(url, signer)
     elif args['list-statements']:
         list_statements(url, signer, args['<chapter>'])
+    elif args['fetch']:
+        fetch(url, signer, args['<chapters>'], args['--out'])
