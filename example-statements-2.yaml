@@ -1,0 +1,12 @@
+-
+  text: 'Talk is cheap'
+  answer: False
+  chapter: 2
+-
+  text: 'New question'
+  answer: True
+  chapter: 3
+-
+  text: 'A triangle has three corners.'
+  answer: True
+  chapter: 3
