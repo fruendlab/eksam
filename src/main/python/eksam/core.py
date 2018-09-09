@@ -186,6 +186,10 @@ def get_grades(chapters):
 
 @app.route('/<chapter>/')
 def main(chapter):
+    with orm.db_session():
+        if not Chapter.exists(number=int(chapter)):
+            abort(404)
+
     return jinja_env.get_template('register.html.j2').render(chapter=chapter)
 
 
