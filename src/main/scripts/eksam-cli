@@ -96,6 +96,8 @@ def list_students(api, signer):
                      params={'token': signer.dumps('token')})
     if r.status_code == 200:
         print(yaml.dump(r.json(), width=50))
+    else:
+        print('Error {}: {}'.format(r.status_code, r.text))
 
 
 def list_statements(api, signer, chapter):
@@ -104,6 +106,8 @@ def list_statements(api, signer, chapter):
                      params={'token': signer.dumps('token')})
     if r.status_code == 200:
         print(yaml.dump(r.json(), width=50))
+    else:
+        print('Error {}: {}'.format(r.status_code, r.text))
 
 
 def fetch(api, signer, chapters, outfile):
@@ -113,6 +117,8 @@ def fetch(api, signer, chapters, outfile):
         with open(outfile, 'w') as f:
             print('Writing to file {}'.format(outfile))
             f.write(r.text)
+    else:
+        print('Error {}: {}'.format(r.status_code, r.text))
 
 
 if __name__ == '__main__':
