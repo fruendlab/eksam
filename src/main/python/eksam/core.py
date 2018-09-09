@@ -184,7 +184,7 @@ def get_grades(chapters):
 # # # # # Routes
 
 
-@app.route('/<chapter>/')
+@app.route('/<int:chapter>/')
 def main(chapter):
     with orm.db_session():
         if not Chapter.exists(number=int(chapter)):
