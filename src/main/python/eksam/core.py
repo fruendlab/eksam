@@ -61,9 +61,11 @@ def verify_student(student_id, chapter_id):
         student = Student[student_id]
     except orm.core.ObjectNotFound:
         return False
+    print('Checking chapter for student {}'.format(student_id))
     for c in student.finished:
+        print('Student finished chapter {}'.format(c.number))
         if c.number == chapter_id:
-            # Student has already done this chapter
+            print('  Student has already finished this chapter!')
             return False
     else:
         return True
