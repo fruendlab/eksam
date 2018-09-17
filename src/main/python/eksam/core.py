@@ -56,12 +56,17 @@ def add_students(student_data):
 
 
 @orm.db_session()
-def verify_student(student_id):
+def verify_student(student_id, chapter_id):
     try:
         student = Student[student_id]
     except orm.core.ObjectNotFound:
         return False
-    return len(student.answers) == 0
+    for c in student.finished:
+        if c.number == chapter_id:
+            # Student has already done this chapter
+            return False
+    else:
+        return True
 
 
 @orm.db_session()
@@ -198,7 +203,7 @@ def exam(chapter):
     student_id = request.form['student_id']
     statements = get_statements(chapter)
     shuffle(statements)
-    if verify_student(student_id):
+    if verify_student(student_id, chapter):
         accomodation = get_accomodation(student_id)
         return jinja_env.get_template('exam.html.j2').render(
             student_id=student_id,
