@@ -2,6 +2,7 @@
 
 from random import shuffle
 from itertools import product
+from functools import reduce
 
 import jinja2
 from flask import Flask, request, abort, jsonify
@@ -88,7 +89,7 @@ def get_accomodation(student_id):
 
 
 @orm.db_session()
-def get_statements(chapter):
+def get_statements(chapter, evaluate=False):
     result = orm.select(
         statement
         for statement in Statement
@@ -99,6 +100,14 @@ def get_statements(chapter):
         new_value = {'idx': statement.id,
                      'answer': statement.correct_answer,
                      'text': statement.text}
+        if evaluate:
+            answers = [int(a.correct) for a in statement.answers]
+            if len(answers):
+                new_value['correct'] = reduce(lambda x, y: x+y, answers)
+                new_value['answers'] = len(answers)
+            else:
+                new_value['correct'] = 0
+                new_value['answers'] = 0
         if statement.checked:
             new_value['status'] = 'checked'
         out.append(new_value)
@@ -252,7 +261,7 @@ def api_get_statements(chapter):
             raise BadSignature
     except BadSignature:
         abort(401)
-    statement_list = get_statements(int(chapter))
+    statement_list = get_statements(int(chapter), evaluate=True)
     return jsonify(statement_list), 200
 
 
